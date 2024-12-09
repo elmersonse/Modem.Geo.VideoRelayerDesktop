@@ -23,6 +23,17 @@ namespace Modem.Geo.VideoRelayerDesktop
         public MainWindow()
         {
             InitializeComponent();
+            CreateButton("b1", "b1");
+            CreateButton("b2", "b2");
+            CreateButton("b3", "b3");
+        }
+
+        public void CreateButton(string Name, string StreamKey)
+        {
+            Button button = new Button();
+            button.Content = Name;
+            button.Name = StreamKey;
+            CameraButtons.Children.Add(button);
         }
     }
 }
