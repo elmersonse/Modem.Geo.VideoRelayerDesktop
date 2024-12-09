@@ -6,7 +6,26 @@
         xmlns:local="clr-namespace:Modem.Geo.VideoRelayerDesktop"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="70"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Menu Name="TopMenu" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
+            <MenuItem Header="File"></MenuItem>
+            <MenuItem Header="Options"></MenuItem>
+        </Menu>
+        <StackPanel Name="TopButtons" Orientation="Horizontal" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <Button Content="Sample1" Width="200" Margin="20"></Button>
+            <Button Content="Sample2" Width="200" Margin="20"></Button>
+        </StackPanel>
+        <StackPanel Name="CameraButtons" Grid.Column="0" Grid.Row="2">
+        </StackPanel>
     </Grid>
 </Window>
