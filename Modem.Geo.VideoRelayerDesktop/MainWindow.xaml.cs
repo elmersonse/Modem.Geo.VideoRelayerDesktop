@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Modem.Geo.VideoRelayerDesktop.Core.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,20 +21,42 @@ namespace Modem.Geo.VideoRelayerDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
+        private CameraCollection _collection;
         public MainWindow()
         {
             InitializeComponent();
-            CreateButton("b1", "b1");
-            CreateButton("b2", "b2");
-            CreateButton("b3", "b3");
+            _collection = new CameraCollection();
+            AddCamera("c1", "1");
+            AddCamera("c1", "2");
+            AddCamera("c3", "3");
+            List<Camera> list = _collection.GetCameraCollection();
+            foreach (Camera c in list) 
+            {
+                CreateButton(c.GetName(), c.GetStreamKey());
+            }
+        }
+
+        public void AddCamera(string Name, string StreamKey)
+        {
+            Response resp;
+            resp = _collection.AddCamera(new Camera(StreamKey, Name));
+            if(resp.Status == Core.Enums.Status.Error)
+            {
+                InvokeErrorWindow(resp.Message);
+            }
         }
 
         public void CreateButton(string Name, string StreamKey)
         {
             Button button = new Button();
             button.Content = Name;
-            button.Name = StreamKey;
+            button.Name = Name;
             CameraButtons.Children.Add(button);
+        }
+
+        public void InvokeErrorWindow(string message)
+        {
+            MessageBox.Show(message, "Ошибка");
         }
     }
 }

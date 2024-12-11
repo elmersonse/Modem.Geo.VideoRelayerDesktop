@@ -26,6 +26,11 @@ namespace Modem.Geo.VideoRelayerDesktop.Core.Classes
             Response response;
             try
             {
+                if(_cameras.FindIndex(x => x.GetName().Equals(camera.GetName())) != -1)
+                {
+                    response = new Response(Enums.Status.Error, $"Камера именем {camera.GetName()} уже существует");
+                    return response;
+                };
                 _cameras.Add(camera);
                 response = new Response(Enums.Status.Ok, "");
             }
