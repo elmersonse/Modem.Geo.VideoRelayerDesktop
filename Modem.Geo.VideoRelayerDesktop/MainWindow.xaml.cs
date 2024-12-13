@@ -38,7 +38,7 @@ namespace Modem.Geo.VideoRelayerDesktop
 
         public void AddCamera(string Name, string StreamKey)
         {
-            Response resp;
+            Response<string> resp;
             resp = _collection.AddCamera(new Camera(StreamKey, Name));
             if(resp.Status == Core.Enums.Status.Error)
             {

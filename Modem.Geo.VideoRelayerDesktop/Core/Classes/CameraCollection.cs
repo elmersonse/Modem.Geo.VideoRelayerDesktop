@@ -21,22 +21,22 @@ namespace Modem.Geo.VideoRelayerDesktop.Core.Classes
             return list;
         }
 
-        public Response AddCamera(Camera camera)
+        public Response<string> AddCamera(Camera camera)
         {
-            Response response;
+            Response<string> response;
             try
             {
                 if(_cameras.FindIndex(x => x.GetName().Equals(camera.GetName())) != -1)
                 {
-                    response = new Response(Enums.Status.Error, $"Камера именем {camera.GetName()} уже существует");
+                    response = new Response<string>(Enums.Status.Error, $"Камера именем {camera.GetName()} уже существует");
                     return response;
                 };
                 _cameras.Add(camera);
-                response = new Response(Enums.Status.Ok, "");
+                response = new Response<string>(Enums.Status.Ok, "");
             }
             catch(Exception ex)
             { 
-                response = new Response(Enums.Status.Error, ex.Message);
+                response = new Response<string>(Enums.Status.Error, ex.Message);
             }
             return response;
         }

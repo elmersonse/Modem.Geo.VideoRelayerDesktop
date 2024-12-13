@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 
 namespace Modem.Geo.VideoRelayerDesktop.Core.Classes
 {
-    internal class Response
+    internal class Response<T>
     {
         public Status Status { get; set; }
         public string Message { get; set; }
+        public T Data { get; set; }
 
         public Response(Status status, string message)
         {
             Status = status;
             Message = message;
+            Data = default(T);
         }
     }
 }
