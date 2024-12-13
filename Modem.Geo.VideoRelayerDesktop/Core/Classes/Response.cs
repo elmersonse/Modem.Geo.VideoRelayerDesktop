@@ -19,5 +19,10 @@ namespace Modem.Geo.VideoRelayerDesktop.Core.Classes
             Message = message;
             Data = default(T);
         }
+
+        public Response(Status status, string message, T data) : this(status, message)
+        {
+            Data = data;
+        }
     }
 }
