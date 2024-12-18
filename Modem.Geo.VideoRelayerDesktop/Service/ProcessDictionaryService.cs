@@ -56,7 +56,7 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
                 }
                 if (IsRunning(key).Data)
                 {
-                    throw new Exception("Процесс уже запущен");
+                    return new Response<string>(Core.Enums.Status.Error, "Процесс уже запущен");
                 }
                 processDictionary[key].Start();
                 return new Response<string>(Core.Enums.Status.Ok, "");
@@ -73,7 +73,7 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
             {
                 return new Response<bool>(Core.Enums.Status.Ok, "", !processDictionary[key].HasExited);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new Response<bool>(Core.Enums.Status.Error, "", false);
             }

@@ -13,6 +13,7 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
     internal class BatExecutionService
     {
         private static BatExecutionService instance;
+        private ProcessDictionaryService processDictionaryService = ProcessDictionaryService.GetInstanse();
 
         private BatExecutionService() { }
 
@@ -25,7 +26,7 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
             return instance;
         }
 
-        public Response<string> CreateBat(string cameraName)
+        public Response<string> CreateBat(string cameraName, string streamKey)
         {
             try
             {
@@ -47,10 +48,18 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
                     stream = batFile.OpenWrite();
                 }
                 StreamWriter input = new StreamWriter(stream);
-                input.Write($"Hello world! {cameraName} is on-line! \n pause >nul");
+                input.Write($"echo \"Hello world! {cameraName} is on-line! Stream started on {streamKey}\" \n pause >nul");
                 input.Close();
                 stream.Close();
-                return new Response<string>(Core.Enums.Status.Ok, "");
+                Response<string> resp = processDictionaryService.AddProcess(cameraName, filepath.Data);
+                if (resp.Status == Core.Enums.Status.Ok)
+                { 
+                    return new Response<string>(Core.Enums.Status.Ok, ""); 
+                }
+                else
+                {
+                    return new Response<string>(Core.Enums.Status.Error, resp.Message);
+                }
             }
             catch (Exception ex) 
             {
@@ -68,10 +77,11 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
                     return new Response<Process>(Core.Enums.Status.Error, filepath.Message);
                 }
 
-                Process bat = new Process();
-                bat.StartInfo.FileName = filepath.Data;
-                bat.StartInfo.UseShellExecute = true;
-                bat.Start();
+                Response<string> r = processDictionaryService.StartProcess(cameraName);
+                if(r.Status == Core.Enums.Status.Error)
+                {
+                    return new Response<Process>(Core.Enums.Status.Error, r.Message);
+                }
             }
             catch(Exception ex)
             {
@@ -84,7 +94,8 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
         {
             try
             {
-                string batPath = ConfigurationManager.AppSettings.Get("batPath");
+                string batPath = Properties.Settings.Default.batPath;
+                
                 if (!Directory.Exists(batPath))
                 {
                     return new Response<string>(Core.Enums.Status.Error, "Указанной директории не существует");
