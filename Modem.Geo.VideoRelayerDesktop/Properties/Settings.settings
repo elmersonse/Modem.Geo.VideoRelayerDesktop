@@ -6,7 +6,25 @@
       <Value Profile="(Default)">C:\Users\pkiti\Desktop\bin</Value>
     </Setting>
     <Setting Name="api" Type="System.String" Scope="User">
-      <Value Profile="(Default)">api</Value>
+      <Value Profile="(Default)">show.innerica.ru</Value>
+    </Setting>
+    <Setting Name="wellboreId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">406</Value>
+    </Setting>
+    <Setting Name="loginApi" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">api/geo/external/account/login</Value>
+    </Setting>
+    <Setting Name="logoutApi" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">api/geo/external/account/logout</Value>
+    </Setting>
+    <Setting Name="login" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">admin</Value>
+    </Setting>
+    <Setting Name="password" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">эники</Value>
+    </Setting>
+    <Setting Name="cameraListApi" Type="System.String" Scope="User">
+      <Value Profile="(Default)">api/geo/camera/wellbore/detailed?id=</Value>
     </Setting>
   </Settings>
 </SettingsFile>

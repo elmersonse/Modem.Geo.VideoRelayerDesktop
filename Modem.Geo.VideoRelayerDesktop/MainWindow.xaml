@@ -22,8 +22,10 @@
             <MenuItem Header="Options" Click="MenuItem_Click"></MenuItem>
         </Menu>
         <StackPanel Name="TopButtons" Orientation="Horizontal" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
-            <Button Content="Sample1" Width="200" Margin="20"></Button>
+            <Button Content="Load Cameras" Width="200" Margin="20" Click="Button_Click"></Button>
             <Button Content="Sample2" Width="200" Margin="20"></Button>
+            <Label Content="Portal status:"></Label>
+            <Label Name="PortalPing"></Label>
         </StackPanel>
         <StackPanel Name="CameraButtons" Grid.Column="0" Grid.Row="2">
         </StackPanel>

@@ -1,4 +1,5 @@
 ﻿using Modem.Geo.VideoRelayerDesktop.Core.Classes;
+using Modem.Geo.VideoRelayerDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +14,7 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
     internal class BatExecutionService
     {
         private static BatExecutionService instance;
+        private CameraCollection _collection = CameraCollection.GetInstance();
         private ProcessDictionaryService processDictionaryService = ProcessDictionaryService.GetInstanse();
 
         private BatExecutionService() { }
@@ -26,68 +28,46 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
             return instance;
         }
 
-        public Response<string> CreateBat(string cameraName, string streamKey)
+        public Response<byte> CreateBat(Camera camera)
         {
             try
-            {
-                
-                Response<string> filepath = CombineBatPath(cameraName);
-                if(filepath.Status == Core.Enums.Status.Error)
-                {
-                    return new Response<string>(Core.Enums.Status.Error, filepath.Message);
-                }
-                FileInfo batFile = new FileInfo(filepath.Data);
-
-                FileStream stream;
-                if (!batFile.Exists)
-                {
-                    stream = batFile.Create();
-                }
-                else
-                {
-                    stream = batFile.OpenWrite();
-                }
-                StreamWriter input = new StreamWriter(stream);
-                input.Write($"echo \"Hello world! {cameraName} is on-line! Stream started on {streamKey}\" \n pause >nul");
-                input.Close();
-                stream.Close();
-                Response<string> resp = processDictionaryService.AddProcess(cameraName, filepath.Data);
-                if (resp.Status == Core.Enums.Status.Ok)
-                { 
-                    return new Response<string>(Core.Enums.Status.Ok, ""); 
-                }
-                else
-                {
-                    return new Response<string>(Core.Enums.Status.Error, resp.Message);
-                }
+            { 
+                Process process = FFmpegHelper.CreateRelayProcessForRTSPInputRecode(camera.Id, camera.InputUrl, camera.OutputUrl);
+                processDictionaryService.AddProcess(camera.Name, process);
+                return new Response<byte>(Core.Enums.Status.Ok, "");
             }
             catch (Exception ex) 
             {
-                return new Response<string>(Core.Enums.Status.Error, ex.Message);
+                return new Response<byte>(Core.Enums.Status.Error, ex.Message);
             }
         }
 
-        public Response<Process> ExecuteBat(string cameraName)
+        public Response<byte> ExecuteBat(string cameraName)
         {
             try
             {
-                Response<string> filepath = CombineBatPath(cameraName);
+                Camera cam = _collection.GetCameraCollection().FirstOrDefault<Camera>(x => x.Name == cameraName);
+                Response<string> filepath = CombineBatPath(cam.Id.ToString());
+                if (cam == null)
+                {
+                    return new Response<byte>(Core.Enums.Status.Error, "Указанной камеры не существует");
+                }
                 if (filepath.Status == Core.Enums.Status.Error)
                 {
-                    return new Response<Process>(Core.Enums.Status.Error, filepath.Message);
+                    return new Response<byte>(Core.Enums.Status.Error, filepath.Message);
                 }
 
                 Response<string> r = processDictionaryService.StartProcess(cameraName);
                 if(r.Status == Core.Enums.Status.Error)
                 {
-                    return new Response<Process>(Core.Enums.Status.Error, r.Message);
+                    return new Response<byte>(Core.Enums.Status.Error, r.Message);
                 }
             }
             catch(Exception ex)
             {
-                return new Response<Process>(Core.Enums.Status.Error, ex.Message);
+                return new Response<byte>(Core.Enums.Status.Error, ex.Message);
             }
-            return new Response<Process>(Core.Enums.Status.Ok, "");
+            return new Response<byte>(Core.Enums.Status.Ok, "");
         }
 
         public Response<string> CombineBatPath(string cameraName)

@@ -37,13 +37,73 @@ namespace Modem.Geo.VideoRelayerDesktop.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("api")]
+        [global::System.Configuration.DefaultSettingValueAttribute("show.innerica.ru")]
         public string api {
             get {
                 return ((string)(this["api"]));
             }
             set {
                 this["api"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("406")]
+        public string wellboreId {
+            get {
+                return ((string)(this["wellboreId"]));
+            }
+            set {
+                this["wellboreId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("api/geo/external/account/login")]
+        public string loginApi {
+            get {
+                return ((string)(this["loginApi"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("api/geo/external/account/logout")]
+        public string logoutApi {
+            get {
+                return ((string)(this["logoutApi"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("admin")]
+        public string login {
+            get {
+                return ((string)(this["login"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("эники")]
+        public string password {
+            get {
+                return ((string)(this["password"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("api/geo/camera/wellbore/detailed?id=")]
+        public string cameraListApi {
+            get {
+                return ((string)(this["cameraListApi"]));
+            }
+            set {
+                this["cameraListApi"] = value;
             }
         }
     }

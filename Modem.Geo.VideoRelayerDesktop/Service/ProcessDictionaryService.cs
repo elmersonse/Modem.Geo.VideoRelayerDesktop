@@ -1,7 +1,9 @@
 ﻿using Modem.Geo.VideoRelayerDesktop.Core.Classes;
+using Modem.Geo.VideoRelayerDesktop.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,22 +29,16 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
             return instanse;
         }
 
-        public Response<string> AddProcess(string cameraName, string filepath)
+        public Response<byte> AddProcess(string key, Process process)
         {
             try
             {
-                Process p = new Process();
-                p.StartInfo.FileName = filepath;
-                p.StartInfo.UseShellExecute = true;
-                if (!processDictionary.ContainsKey(cameraName))
-                {
-                    processDictionary.Add(cameraName, p);
-                }
-                return new Response<string>(Core.Enums.Status.Ok, "");
+                processDictionary.Add(key, process);
+                return new Response<byte>(Core.Enums.Status.Ok, "");
             }
             catch (Exception ex)
             {
-                return new Response<string>(Core.Enums.Status.Error, ex.Message);
+                return new Response<byte>(Core.Enums.Status.Error, ex.Message);
             }
         }
 
@@ -58,7 +54,14 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
                 {
                     return new Response<string>(Core.Enums.Status.Error, "Процесс уже запущен");
                 }
-                processDictionary[key].Start();
+                Process p = processDictionary[key];
+                p.StartInfo.CreateNoWindow = false;
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                
+                p.Start();
+                
                 return new Response<string>(Core.Enums.Status.Ok, "");
             }
             catch (Exception ex)
@@ -76,6 +79,17 @@ namespace Modem.Geo.VideoRelayerDesktop.Service
             catch (Exception)
             {
                 return new Response<bool>(Core.Enums.Status.Error, "", false);
+            }
+        }
+
+        public void StopProcess(string key)
+        {
+            if(IsRunning(key).Data)
+            {
+                using (StreamWriter streamWriter = processDictionary[key].StandardInput)
+                {
+                    streamWriter.WriteLine('q');
+                }
             }
         }
 

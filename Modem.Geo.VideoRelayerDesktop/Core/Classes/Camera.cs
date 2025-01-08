@@ -6,27 +6,13 @@ using System.Threading.Tasks;
 
 namespace Modem.Geo.VideoRelayerDesktop.Core.Classes
 {
-    internal class Camera
+    public class Camera
     {
-        string StreamKey;
-        string Name;
+        public long Id { get; set; }
+        public long WellboreId { get; set; }
+        public string Name { get; set; }
+        public string InputUrl { get; set; }
+        public string OutputUrl { get; set; }
 
-        public Camera() { }
-
-        public Camera(string streamKey, string name)
-        {
-            StreamKey = streamKey;
-            Name = name;
-        }
-
-        public string GetStreamKey()
-        {
-            return StreamKey;
-        }
-
-        public string GetName()
-        {
-            return Name;
-        }
     }
 }
