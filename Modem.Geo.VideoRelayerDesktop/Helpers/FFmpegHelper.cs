@@ -85,7 +85,8 @@ namespace Modem.Geo.VideoRelayerDesktop.Helpers
         {
             DirectoryHelper.ThrowIfNoFFmpeg();
 
-            string[] outNames = DirectoryHelper.CreateOutputFiles(id);
+            //string[] outNames = DirectoryHelper.CreateOutputFiles(id);
+            string outName = DirectoryHelper.CreateSingleOutputFile(id);
 
             var argsBuilder = new FFmpegArgsBuilder();
             var args = argsBuilder
@@ -104,8 +105,9 @@ namespace Modem.Geo.VideoRelayerDesktop.Helpers
                 .SetAudioBitrate(64)
                 .SetOutputFormat("flv")
                 .SetOutputUrl(rtmpOutputUrl)
-                .SetStandardOutput(outNames[0])
-                .SetErrorOutput(outNames[1])
+                .SetOutputToSingleFile(outName)
+                //.SetStandardOutput(outNames[0])
+                //.SetErrorOutput(outNames[1])
                 .Build();
 
             return CreateBatProcess(id, args);

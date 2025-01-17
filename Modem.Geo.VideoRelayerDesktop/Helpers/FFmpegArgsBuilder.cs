@@ -175,6 +175,13 @@ namespace Modem.Geo.VideoRelayerDesktop.Helpers
             return this;
         }
 
+        public FFmpegArgsBuilder SetOutputToSingleFile(string options)
+        {
+            if (string.IsNullOrEmpty(options)) throw new ArgumentException("Segment format options cannot be null or empty", nameof(options));
+            _argsStringBuilder.Append($"1>{options} 2>&1");
+            return this;
+        }
+
         public string Build()
         {
             return _argsStringBuilder.ToString();

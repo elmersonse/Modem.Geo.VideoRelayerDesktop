@@ -32,6 +32,17 @@ namespace Modem.Geo.VideoRelayerDesktop.Helpers
                 throw new ArgumentException($"Executable inside {FFmpegPath} doesn't exist!", nameof(FFmpegPath));
         }
 
+        public static string CreateSingleOutputFile(long id)
+        {
+            FileInfo StdOut = new FileInfo(Path.Combine(_basePath, $"out{id}.txt"));
+            if (!StdOut.Exists)
+            {
+                StdOut.Create();
+            }
+
+            return StdOut.FullName;
+        }
+
         public static string[] CreateOutputFiles(long id)
         {
             string[] res = new string[2];
