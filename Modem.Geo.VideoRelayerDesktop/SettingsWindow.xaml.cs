@@ -26,6 +26,8 @@ namespace Modem.Geo.VideoRelayerDesktop
             InitializeComponent();
             BatPath.Text = Properties.Settings.Default.batPath;
             Api.Text = Properties.Settings.Default.api;
+            PortalLogin.Text = Properties.Settings.Default.login;
+            PortalPassword.Text = Properties.Settings.Default.password;
         }
 
         private void SavePath_Click(object sender, RoutedEventArgs e)
@@ -37,6 +39,18 @@ namespace Modem.Geo.VideoRelayerDesktop
         private void SaveApi_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.api = Api.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void SaveLogin_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.login = PortalLogin.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void SavePassword_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.password = PortalPassword.Text;
             Properties.Settings.Default.Save();
         }
     }

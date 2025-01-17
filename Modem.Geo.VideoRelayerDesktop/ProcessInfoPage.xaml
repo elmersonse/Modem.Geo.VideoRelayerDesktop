@@ -11,12 +11,14 @@
 
     <Grid>
         <StackPanel>
-            <Label Content="Camera status:" Name="CameraPingLabel" Visibility="Hidden"></Label>
-            <Label Name="CameraPing" Visibility="Hidden"></Label>
-            <Label Content="" Name="cameraNameLabel"></Label>
+            <Label Content="" Name="cameraNameLabel" FontSize="20"></Label>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Статус камеры:" Name="CameraPingLabel" Visibility="Hidden"></Label>
+                <Label Name="CameraPing" Visibility="Hidden"></Label>
+            </StackPanel>
             <Button Name="Launch" Content="Запуск камеры" Click="ButtonClick" Visibility="Hidden"></Button>
             <Button Name="Stop" Content="Остановить камеру" Click="Stop_Click" Visibility="Hidden"></Button>
-            <Label Name="CameraStatus" Content="Камера остановлена" Visibility="Hidden"></Label>
+            <Label Name="CameraStatus" Content="Камера остановлена" Visibility="Hidden" Foreground="Red"></Label>
         </StackPanel>
     </Grid>
 </Page>

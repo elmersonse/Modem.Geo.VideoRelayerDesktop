@@ -1,4 +1,5 @@
 ﻿using Modem.Geo.VideoRelayerDesktop.Core.Classes;
+using Modem.Geo.VideoRelayerDesktop.Helpers;
 using Modem.Geo.VideoRelayerDesktop.Service;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,17 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+//using System.Windows.Media.Imaging;
+//using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -39,41 +43,37 @@ namespace Modem.Geo.VideoRelayerDesktop
             timer.Interval = new TimeSpan(0, 0, 10);
             timer.Start();
 
+            ThreadPool.QueueUserWorkItem(CheckPortalStatus);
+            RefreshPortalStatus();
+
             Task<Response<string>> resp = _collection.AddCameraFromApi();
-            
-            
         }
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            //PortalPing.Content = DateTime.Now.ToString();
-            if(PingHost("show.innerica.ru"))
+            ThreadPool.QueueUserWorkItem(CheckPortalStatus);
+            RefreshPortalStatus();
+        }
+
+        private void CheckPortalStatus(Object stateinfo)
+        {
+            PingHelper.PortalPing();
+        }
+
+        private void RefreshPortalStatus()
+        {
+            if (PingHelper.PortalStatus)
             {
-                PortalPing.Content = "online";
+                PortalPing.Content = "онлайн";
                 PortalPing.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
             }
             else
             {
-                PortalPing.Content = "offline";
+                PortalPing.Content = "оффлайн";
                 PortalPing.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
             }
         }
 
-        private bool PingHost(string nameOrAddress)
-        {
-            try
-            {
-                using (Ping pinger = new Ping())
-                {
-                    PingReply reply = pinger.Send(nameOrAddress);
-                    return reply.Status == IPStatus.Success;
-                }
-            }
-            catch (PingException)
-            {
-                return false;
-            }
-        }
 
         public void AddCamera(string name, string streamKey)
         {
@@ -87,10 +87,8 @@ namespace Modem.Geo.VideoRelayerDesktop
 
         public void CreateButton(Camera camera)
         {
-            Button button = new Button();
-            button.Content = camera.Name;
-            button.Name = $"N{camera.Id}";
-            button.Click += ButtonClick;
+            RadioButton button = new RadioButton();
+            SetupButton(button, camera);
             CameraButtons.Children.Add(button);
             Response<byte> resp = _batExecutionService.CreateBat(camera);
             if(resp.Status == Core.Enums.Status.Error)
@@ -99,24 +97,39 @@ namespace Modem.Geo.VideoRelayerDesktop
             }
         }
 
+        private void SetupButton(RadioButton b, Camera c)
+        {
+            b.Content = c.Name;
+            b.Name = $"N{c.Id}";
+            b.FontSize = 16;
+            b.Checked += ButtonClick;
+        }
+
         private void ButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                Button b = (Button)sender;
-                ProcessInfoPage p = (ProcessInfoPage)PageFrame.Content;
-                p.SetCameraName(b.Content.ToString());
-                p.CameraIp = p.GetCameraIp();
-                p.Launch.Visibility = Visibility.Visible;
-                p.CameraPingLabel.Visibility = Visibility.Visible;
-                p.CameraPing.Visibility = Visibility.Visible;   
-                p.CameraStatus.Visibility = Visibility.Visible;
-                p.Stop.Visibility = Visibility.Visible;
+                RadioButton b = (RadioButton)sender;
+                SetupInfoPage(b);
             }
             catch (Exception ex) 
             { 
                 InvokeErrorWindow(ex.Message);
             }
+        }
+
+        private void SetupInfoPage(RadioButton b)
+        {
+            ProcessInfoPage p = (ProcessInfoPage)PageFrame.Content;
+            p.SetCameraName(b.Content.ToString());
+            p.CameraIp = p.GetCameraIp();
+            p.PingRemote();
+            p.RefreshStatus();
+            p.Launch.Visibility = Visibility.Visible;
+            p.CameraPingLabel.Visibility = Visibility.Visible;
+            p.CameraPing.Visibility = Visibility.Visible;
+            p.CameraStatus.Visibility = Visibility.Visible;
+            p.Stop.Visibility = Visibility.Visible;
         }
 
         public void CreateButtonsFromList()
@@ -144,11 +157,6 @@ namespace Modem.Geo.VideoRelayerDesktop
         {
             SettingsWindow sw = new SettingsWindow();
             sw.ShowDialog();
-        }
-
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
-        {
-            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

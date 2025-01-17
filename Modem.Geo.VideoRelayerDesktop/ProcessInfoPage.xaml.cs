@@ -1,4 +1,5 @@
 ﻿using Modem.Geo.VideoRelayerDesktop.Core.Classes;
+using Modem.Geo.VideoRelayerDesktop.Helpers;
 using Modem.Geo.VideoRelayerDesktop.Service;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Modem.Geo.VideoRelayerDesktop
 {
@@ -32,10 +35,15 @@ namespace Modem.Geo.VideoRelayerDesktop
         {
             InitializeComponent();
 
-            System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Tick += new EventHandler(DispatcherTimer_Tick);
-            timer.Interval = new TimeSpan(0, 0, 10);
-            timer.Start();
+            DispatcherTimer pingTimer = new DispatcherTimer();
+            pingTimer.Tick += new EventHandler(PingTimer_Tick);
+            pingTimer.Interval = new TimeSpan(0, 0, 10);
+            pingTimer.Start();
+
+            DispatcherTimer refreshTimer = new DispatcherTimer();
+            refreshTimer.Tick += RefreshTimer_Tick;
+            refreshTimer.Interval = new TimeSpan(0, 0, 2);
+            refreshTimer.Start();
         }
 
         public void SetCameraName(string name)
@@ -43,24 +51,43 @@ namespace Modem.Geo.VideoRelayerDesktop
             cameraNameLabel.Content = name;
         }
 
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        private void PingTimer_Tick(object sender, EventArgs e)
         {
+            PingRemote();
+        }
 
-            if(CameraIp != null)
+        public void PingRemote()
+        {
+            if (CameraIp != null)
             {
-                if (PingHost(CameraIp))
-                {
-                    CameraPing.Content = "online";
-                    CameraPing.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
-                }
-                else
-                {
-                    CameraPing.Content = "offline";
-                    CameraPing.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-                }
+                ThreadPool.QueueUserWorkItem(CheckCameraStatus);
+            }
+        }
+
+        private void CheckCameraStatus(Object stateInfo)
+        {
+            PingHelper.AdressPing(CameraIp);
+        }
+
+        public void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            RefreshStatus();
+        }
+
+        public void RefreshStatus()
+        {
+            if (PingHelper.CurrentCameraStatus)
+            {
+                CameraPing.Content = "онлайн";
+                CameraPing.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            }
+            else
+            {
+                CameraPing.Content = "оффлайн";
+                CameraPing.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
             }
 
-            if (_processDictionaryService.IsRunning(cameraNameLabel.Content.ToString()).Data) 
+            if (_processDictionaryService.IsRunning(cameraNameLabel.Content.ToString()).Data)
             {
                 CameraStatus.Content = "Камера запущена";
                 CameraStatus.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
@@ -89,22 +116,6 @@ namespace Modem.Geo.VideoRelayerDesktop
                 }
             }
             return cameraIp;
-        }
-
-        private bool PingHost(string nameOrAddress)
-        {
-            try
-            {
-                using (Ping pinger = new Ping())
-                {
-                    PingReply reply = pinger.Send(nameOrAddress);
-                    return reply.Status == IPStatus.Success;
-                }
-            }
-            catch (PingException)
-            {
-                return false;
-            }
         }
 
         private void ButtonClick(object sender, RoutedEventArgs e)

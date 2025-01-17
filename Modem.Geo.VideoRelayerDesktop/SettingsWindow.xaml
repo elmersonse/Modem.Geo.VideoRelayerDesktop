@@ -13,9 +13,15 @@
             <Label Content="Путь к файлам .bat"></Label>
             <TextBox Name="BatPath"></TextBox>
             <Button Name="SavePath" Content="Сохранить" Click="SavePath_Click"></Button>
-            <Label Content="Адрес API"></Label>
+            <Label Content="Адрес списка камер"></Label>
             <TextBox Name="Api"></TextBox>
             <Button Name="SaveApi" Content="Сохранить" Click="SaveApi_Click"></Button>
+            <Label Content="Логин на портале"></Label>
+            <TextBox Name="PortalLogin"></TextBox>
+            <Button Name="SaveLogin" Content="Сохранить" Click="SaveLogin_Click"></Button>
+            <Label Content="Пароль на портале"></Label>
+            <TextBox Name="PortalPassword"></TextBox>
+            <Button Name="SavePassword" Content="Сохранить" Click="SavePassword_Click"></Button>
         </StackPanel>
     </Grid>
 </Window>
